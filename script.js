@@ -183,7 +183,7 @@ async function sendRsvp(event) {
   }
 
   if (!settings.rsvpEndpoint) {
-    rsvpNote.textContent = 'Нужно вставить ссылку Google Apps Script в rsvpEndpoint внутри script.js.';
+    rsvpNote.textContent = 'https://script.google.com/macros/s/AKfycby3vfPlznBj_vhbQsEgNjaKylVStxirLNJ26ZqAcSaUlrn8Ku6-tAamYui0BXb3uJY/exec';
     return;
   }
 
