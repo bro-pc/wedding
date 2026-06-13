@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17100d">
+  <meta name="description" content="Свадебное приглашение Мухаммадчон и Мехрона">
+  <title>Мухаммадчон & Мехрона - свадебное приглашение</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="opening" id="opening">
+    <div class="opening__glow"></div>
+    <div class="opening__card">
+      <div class="ornament ornament_top"></div>
+      <p class="eyebrow">свадебное приглашение</p>
+      <div class="monogram">М <span>&</span> М</div>
+      <h1>Мухаммадчон<br><span>и</span><br>Мехрона</h1>
+      <p class="opening__date">26 июня 2026</p>
+      <button class="open-btn" id="openInvite" type="button">
+        <span>Открыть приглашение</span>
+      </button>
+      <p class="opening__hint">нажмите, чтобы включить музыку и открыть открытку</p>
+      <div class="ornament ornament_bottom"></div>
+    </div>
+  </div>
+
+  <main class="page" id="page">
+    <button class="music-btn" id="musicButton" type="button" aria-label="Включить или выключить музыку">
+      <span class="music-btn__icon">♪</span>
+      <span class="music-btn__text">музыка</span>
+    </button>
+
+    <section class="hero section">
+      <div class="hero__bg"></div>
+      <div class="petals" id="petals"></div>
+      <div class="hero__content reveal">
+        <p class="eyebrow">приглашение на свадьбу</p>
+        <h2>Мухаммадчон <span>&</span> Мехрона</h2>
+        <p class="hero__subtitle">Мы будем счастливы разделить с вами день рождения нашей семьи</p>
+        <div class="hero__meta">
+          <div>
+            <span>Дата</span>
+            <strong>26.06.2026</strong>
+          </div>
+          <div>
+            <span>Время</span>
+            <strong>18:00</strong>
+          </div>
+          <div>
+            <span>Место</span>
+            <strong>Ресторан «Стамбул»</strong>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-note">листайте вниз</div>
+    </section>
+
+    <section class="invite section reveal">
+      <div class="section-label">дорогие родные и друзья</div>
+      <h2>С великой радостью приглашаем вас на наше торжество</h2>
+      <p>
+        В этот особенный вечер мы хотим собрать рядом самых близких людей, чтобы вместе разделить радость, тепло и красоту нашего свадебного дня.
+      </p>
+      <p>
+        Ваше присутствие станет для нас настоящим подарком и сделает этот день ещё более светлым и незабываемым.
+      </p>
+      <div class="signature">Мухаммадчон & Мехрона</div>
+    </section>
+
+    <section class="details section reveal">
+      <div class="details__card date-card">
+        <p class="section-label">когда</p>
+        <div class="big-date">
+          <span>26</span>
+          <div>
+            <strong>июня</strong>
+            <small>пятница, 2026</small>
+          </div>
+        </div>
+        <p class="time-text">Начало торжества в 18:00</p>
+        <a class="link-btn" href="wedding.ics" download>Добавить в календарь</a>
+      </div>
+      <div class="details__card place-card">
+        <p class="section-label">где</p>
+        <h3>Ресторан «Стамбул»</h3>
+        <p>Москва, улица Скульптора Мухиной, 11</p>
+        <div class="place-actions">
+          <a class="link-btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=%D0%A0%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%20%D0%A1%D1%82%D0%B0%D0%BC%D0%B1%D1%83%D0%BB%2C%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A1%D0%BA%D1%83%D0%BB%D1%8C%D0%BF%D1%82%D0%BE%D1%80%D0%B0%20%D0%9C%D1%83%D1%85%D0%B8%D0%BD%D0%BE%D0%B9%2011">Google Maps</a>
+          <a class="link-btn link-btn_light" target="_blank" rel="noopener" href="https://yandex.ru/maps/?text=%D0%A0%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%20%D0%A1%D1%82%D0%B0%D0%BC%D0%B1%D1%83%D0%BB%2C%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A1%D0%BA%D1%83%D0%BB%D1%8C%D0%BF%D1%82%D0%BE%D1%80%D0%B0%20%D0%9C%D1%83%D1%85%D0%B8%D0%BD%D0%BE%D0%B9%2011">Яндекс Карты</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="countdown section reveal">
+      <p class="section-label">до торжества осталось</p>
+      <div class="timer" id="timer">
+        <div><strong id="days">00</strong><span>дней</span></div>
+        <div><strong id="hours">00</strong><span>часов</span></div>
+        <div><strong id="minutes">00</strong><span>минут</span></div>
+        <div><strong id="seconds">00</strong><span>секунд</span></div>
+      </div>
+    </section>
+
+    <section class="map section reveal">
+      <div class="map__text">
+        <p class="section-label">локация</p>
+        <h2>Мы ждём вас в ресторане «Стамбул»</h2>
+        <p>Адрес: Москва, улица Скульптора Мухиной, 11</p>
+      </div>
+      <div class="map__frame">
+        <iframe title="Карта ресторана Стамбул" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=%D0%A0%D0%B5%D1%81%D1%82%D0%BE%D1%80%D0%B0%D0%BD%20%D0%A1%D1%82%D0%B0%D0%BC%D0%B1%D1%83%D0%BB%2C%20%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A1%D0%BA%D1%83%D0%BB%D1%8C%D0%BF%D1%82%D0%BE%D1%80%D0%B0%20%D0%9C%D1%83%D1%85%D0%B8%D0%BD%D0%BE%D0%B9%2011&output=embed"></iframe>
+      </div>
+    </section>
+
+    <section class="rsvp section reveal">
+      <p class="section-label">подтверждение присутствия</p>
+      <h2>Пожалуйста, сообщите нам, сможете ли вы прийти</h2>
+      <div class="rsvp__choice" role="group" aria-label="Выбор ответа">
+        <button class="choice active" type="button" data-answer="Я приду">Я приду</button>
+        <button class="choice" type="button" data-answer="Не смогу">Не смогу</button>
+      </div>
+      <input id="guestName" type="text" placeholder="Ваше имя" autocomplete="name">
+      <div class="rsvp__buttons">
+        <button class="send-btn" id="whatsappBtn" type="button">Отправить в WhatsApp</button>
+        <button class="send-btn send-btn_light" id="telegramBtn" type="button">Отправить в Telegram</button>
+      </div>
+      <p class="rsvp__note" id="rsvpNote">Сообщение будет сформировано автоматически.</p>
+    </section>
+
+    <section class="final section reveal">
+      <div class="final__inner">
+        <p class="eyebrow">с любовью и уважением</p>
+        <h2>Будем ждать вас</h2>
+        <div class="final__names">Мухаммадчон & Мехрона</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

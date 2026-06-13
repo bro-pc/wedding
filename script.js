@@ -1,0 +1,205 @@
+const settings = {
+  weddingDate: '2026-06-26T18:00:00+03:00',
+  whatsappNumber: '',
+  telegramUsername: '',
+  couple: 'Мухаммадчон и Мехрона',
+  place: 'Ресторан «Стамбул», Москва, улица Скульптора Мухиной, 11'
+};
+
+const opening = document.getElementById('opening');
+const openInvite = document.getElementById('openInvite');
+const musicButton = document.getElementById('musicButton');
+const rsvpNote = document.getElementById('rsvpNote');
+const guestName = document.getElementById('guestName');
+const choices = document.querySelectorAll('.choice');
+const whatsappBtn = document.getElementById('whatsappBtn');
+const telegramBtn = document.getElementById('telegramBtn');
+const petals = document.getElementById('petals');
+
+let selectedAnswer = 'Я приду';
+let audio = null;
+let audioContext = null;
+let musicTimer = null;
+let musicEnabled = false;
+
+function openPage() {
+  document.body.classList.add('opened');
+  opening.classList.add('hidden');
+  startMusic();
+  setTimeout(() => opening.remove(), 1000);
+}
+
+function createPetals() {
+  const count = window.innerWidth < 640 ? 18 : 32;
+  for (let i = 0; i < count; i += 1) {
+    const petal = document.createElement('span');
+    petal.className = 'petal';
+    petal.style.left = `${Math.random() * 100}%`;
+    petal.style.animationDuration = `${8 + Math.random() * 10}s`;
+    petal.style.animationDelay = `${Math.random() * 8}s`;
+    petal.style.setProperty('--drift', `${-70 + Math.random() * 140}px`);
+    petal.style.opacity = `${0.35 + Math.random() * 0.55}`;
+    petals.appendChild(petal);
+  }
+}
+
+function revealOnScroll() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.16 });
+
+  document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
+}
+
+function updateTimer() {
+  const target = new Date(settings.weddingDate).getTime();
+  const now = Date.now();
+  const diff = Math.max(target - now, 0);
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+  const minutes = Math.floor(diff / (1000 * 60)) % 60;
+  const seconds = Math.floor(diff / 1000) % 60;
+
+  document.getElementById('days').textContent = String(days).padStart(2, '0');
+  document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+  document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+}
+
+function tryFileMusic() {
+  audio = new Audio('music.mp3');
+  audio.loop = true;
+  audio.volume = 0.34;
+
+  return audio.play().then(() => {
+    musicEnabled = true;
+    musicButton.classList.remove('paused');
+  }).catch(() => {
+    audio = null;
+    startSynthMusic();
+  });
+}
+
+function startSynthMusic() {
+  audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+  const notes = [523.25, 659.25, 783.99, 987.77, 880, 783.99, 659.25, 587.33];
+  let step = 0;
+  musicEnabled = true;
+  musicButton.classList.remove('paused');
+
+  const playNote = () => {
+    if (!musicEnabled || !audioContext) return;
+
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.value = notes[step % notes.length];
+    filter.type = 'lowpass';
+    filter.frequency.value = 1600;
+
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1.4);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start();
+    osc.stop(audioContext.currentTime + 1.45);
+
+    step += 1;
+    musicTimer = setTimeout(playNote, 1120);
+  };
+
+  playNote();
+}
+
+function startMusic() {
+  if (musicEnabled) return;
+  tryFileMusic();
+}
+
+function stopMusic() {
+  musicEnabled = false;
+  musicButton.classList.add('paused');
+
+  if (audio) {
+    audio.pause();
+    return;
+  }
+
+  if (musicTimer) {
+    clearTimeout(musicTimer);
+    musicTimer = null;
+  }
+}
+
+function toggleMusic() {
+  if (musicEnabled) {
+    stopMusic();
+  } else if (audio) {
+    audio.play().then(() => {
+      musicEnabled = true;
+      musicButton.classList.remove('paused');
+    }).catch(() => startSynthMusic());
+  } else {
+    startSynthMusic();
+  }
+}
+
+function makeMessage() {
+  const name = guestName.value.trim() || 'Гость';
+  return `${name}: ${selectedAnswer} на свадьбу ${settings.couple}. Дата: 26.06.2026, 18:00. Место: ${settings.place}.`;
+}
+
+async function copyMessage(message) {
+  try {
+    await navigator.clipboard.writeText(message);
+    rsvpNote.textContent = 'Сообщение скопировано. Можно отправить его организатору.';
+  } catch {
+    rsvpNote.textContent = message;
+  }
+}
+
+function sendWhatsApp() {
+  const message = makeMessage();
+  const encoded = encodeURIComponent(message);
+  const number = settings.whatsappNumber.replace(/\D/g, '');
+  const url = number ? `https://wa.me/${number}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+  copyMessage(message);
+  window.open(url, '_blank', 'noopener');
+}
+
+function sendTelegram() {
+  const message = makeMessage();
+  const encoded = encodeURIComponent(message);
+  const username = settings.telegramUsername.replace('@', '').trim();
+  const url = username ? `https://t.me/${username}` : `https://t.me/share/url?text=${encoded}`;
+  copyMessage(message);
+  window.open(url, '_blank', 'noopener');
+}
+
+choices.forEach((choice) => {
+  choice.addEventListener('click', () => {
+    choices.forEach((item) => item.classList.remove('active'));
+    choice.classList.add('active');
+    selectedAnswer = choice.dataset.answer;
+  });
+});
+
+openInvite.addEventListener('click', openPage);
+musicButton.addEventListener('click', toggleMusic);
+whatsappBtn.addEventListener('click', sendWhatsApp);
+telegramBtn.addEventListener('click', sendTelegram);
+
+createPetals();
+revealOnScroll();
+updateTimer();
+setInterval(updateTimer, 1000);
