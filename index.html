@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#17100d">
-  <meta name="description" content="Свадебное приглашение Мухаммадчон и Мехрона">
-  <title>Мухаммадчон & Мехрона - свадебное приглашение</title>
+  <meta name="description" content="Свадебное приглашение Muhammadjon and Mehrona">
+  <title>Muhammadjon & Mehrona - свадебное приглашение</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
       <div class="ornament ornament_top"></div>
       <p class="eyebrow">свадебное приглашение</p>
       <div class="monogram">М <span>&</span> М</div>
-      <h1>Мухаммадчон<br><span>и</span><br>Мехрона</h1>
+      <h1>Muhammadjon<br><span>&</span><br>Mehrona</h1>
       <p class="opening__date">26 июня 2026</p>
       <button class="open-btn" id="openInvite" type="button">
         <span>Открыть приглашение</span>
@@ -42,7 +42,7 @@
       <div class="petals" id="petals"></div>
       <div class="hero__content reveal">
         <p class="eyebrow">приглашение на свадьбу</p>
-        <h2>Мухаммадчон <span>&</span> Мехрона</h2>
+        <h2>Muhammadjon <span>&</span> Mehrona</h2>
         <p class="hero__subtitle">Мы будем счастливы разделить с вами день рождения нашей семьи</p>
         <div class="hero__meta">
           <div>
@@ -71,7 +71,7 @@
       <p>
         Ваше присутствие станет для нас настоящим подарком и сделает этот день ещё более светлым и незабываемым.
       </p>
-      <div class="signature">Мухаммадчон & Мехрона</div>
+      <div class="signature">Muhammadjon & Mehrona</div>
     </section>
 
     <section class="details section reveal">
@@ -121,24 +121,27 @@
 
     <section class="rsvp section reveal">
       <p class="section-label">подтверждение присутствия</p>
-      <h2>Пожалуйста, сообщите нам, сможете ли вы прийти</h2>
-      <div class="rsvp__choice" role="group" aria-label="Выбор ответа">
-        <button class="choice active" type="button" data-answer="Я приду">Я приду</button>
-        <button class="choice" type="button" data-answer="Не смогу">Не смогу</button>
-      </div>
-      <input id="guestName" type="text" placeholder="Ваше имя" autocomplete="name">
-      <div class="rsvp__buttons">
-        <button class="send-btn" id="whatsappBtn" type="button">Отправить в WhatsApp</button>
-        <button class="send-btn send-btn_light" id="telegramBtn" type="button">Отправить в Telegram</button>
-      </div>
-      <p class="rsvp__note" id="rsvpNote">Сообщение будет сформировано автоматически.</p>
+      <h2>Пожалуйста, оставьте своё ФИО и сообщите, сможете ли вы прийти</h2>
+      <p class="rsvp__lead">Ответ автоматически отправится организатору в Telegram.</p>
+      <form class="rsvp__form" id="rsvpForm">
+        <label class="rsvp__field" for="guestName">
+          <span>ФИО гостя</span>
+          <input id="guestName" name="name" type="text" placeholder="Например: Алиев Абдулло Саидович" autocomplete="name" required>
+        </label>
+        <div class="rsvp__choice" role="group" aria-label="Выбор ответа">
+          <button class="choice active" type="button" data-answer="Я приду">Я приду</button>
+          <button class="choice" type="button" data-answer="Не смогу">Не смогу</button>
+        </div>
+        <button class="send-btn" id="sendRsvpBtn" type="submit">Отправить ответ</button>
+      </form>
+      <p class="rsvp__note" id="rsvpNote">Ваш ответ придёт организатору в Telegram.</p>
     </section>
 
     <section class="final section reveal">
       <div class="final__inner">
         <p class="eyebrow">с любовью и уважением</p>
         <h2>Будем ждать вас</h2>
-        <div class="final__names">Мухаммадчон & Мехрона</div>
+        <div class="final__names">Muhammadjon & Mehrona</div>
       </div>
     </section>
   </main>

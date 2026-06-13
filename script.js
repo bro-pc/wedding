@@ -1,8 +1,7 @@
 const settings = {
   weddingDate: '2026-06-26T18:00:00+03:00',
-  whatsappNumber: '',
-  telegramUsername: '',
-  couple: 'Мухаммадчон и Мехрона',
+  rsvpEndpoint: '',
+  couple: 'Muhammadjon and Mehrona',
   place: 'Ресторан «Стамбул», Москва, улица Скульптора Мухиной, 11'
 };
 
@@ -10,10 +9,10 @@ const opening = document.getElementById('opening');
 const openInvite = document.getElementById('openInvite');
 const musicButton = document.getElementById('musicButton');
 const rsvpNote = document.getElementById('rsvpNote');
+const rsvpForm = document.getElementById('rsvpForm');
+const sendRsvpBtn = document.getElementById('sendRsvpBtn');
 const guestName = document.getElementById('guestName');
 const choices = document.querySelectorAll('.choice');
-const whatsappBtn = document.getElementById('whatsappBtn');
-const telegramBtn = document.getElementById('telegramBtn');
 const petals = document.getElementById('petals');
 
 let selectedAnswer = 'Я приду';
@@ -154,36 +153,59 @@ function toggleMusic() {
   }
 }
 
-function makeMessage() {
-  const name = guestName.value.trim() || 'Гость';
-  return `${name}: ${selectedAnswer} на свадьбу ${settings.couple}. Дата: 26.06.2026, 18:00. Место: ${settings.place}.`;
+function makeRsvpPayload() {
+  const name = guestName.value.trim();
+  return {
+    name,
+    answer: selectedAnswer,
+    couple: settings.couple,
+    place: settings.place,
+    eventDate: '26.06.2026',
+    eventTime: '18:00',
+    page: window.location.href,
+    createdAt: new Date().toLocaleString('ru-RU')
+  };
 }
 
-async function copyMessage(message) {
-  try {
-    await navigator.clipboard.writeText(message);
-    rsvpNote.textContent = 'Сообщение скопировано. Можно отправить его организатору.';
-  } catch {
-    rsvpNote.textContent = message;
+function setSendingState(isSending) {
+  sendRsvpBtn.disabled = isSending;
+  sendRsvpBtn.textContent = isSending ? 'Отправляем...' : 'Отправить ответ';
+}
+
+async function sendRsvp(event) {
+  event.preventDefault();
+
+  const payload = makeRsvpPayload();
+  if (!payload.name) {
+    rsvpNote.textContent = 'Пожалуйста, напишите своё ФИО.';
+    guestName.focus();
+    return;
   }
-}
 
-function sendWhatsApp() {
-  const message = makeMessage();
-  const encoded = encodeURIComponent(message);
-  const number = settings.whatsappNumber.replace(/\D/g, '');
-  const url = number ? `https://wa.me/${number}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
-  copyMessage(message);
-  window.open(url, '_blank', 'noopener');
-}
+  if (!settings.rsvpEndpoint) {
+    rsvpNote.textContent = 'Нужно вставить ссылку Google Apps Script в rsvpEndpoint внутри script.js.';
+    return;
+  }
 
-function sendTelegram() {
-  const message = makeMessage();
-  const encoded = encodeURIComponent(message);
-  const username = settings.telegramUsername.replace('@', '').trim();
-  const url = username ? `https://t.me/${username}` : `https://t.me/share/url?text=${encoded}`;
-  copyMessage(message);
-  window.open(url, '_blank', 'noopener');
+  setSendingState(true);
+  rsvpNote.textContent = 'Отправляем ответ...';
+
+  const formData = new URLSearchParams(payload);
+
+  try {
+    await fetch(settings.rsvpEndpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    });
+
+    rsvpForm.reset();
+    rsvpNote.textContent = 'Спасибо! Ваш ответ отправлен.';
+  } catch {
+    rsvpNote.textContent = 'Не получилось отправить ответ. Попробуйте ещё раз.';
+  } finally {
+    setSendingState(false);
+  }
 }
 
 choices.forEach((choice) => {
@@ -196,8 +218,7 @@ choices.forEach((choice) => {
 
 openInvite.addEventListener('click', openPage);
 musicButton.addEventListener('click', toggleMusic);
-whatsappBtn.addEventListener('click', sendWhatsApp);
-telegramBtn.addEventListener('click', sendTelegram);
+rsvpForm.addEventListener('submit', sendRsvp);
 
 createPetals();
 revealOnScroll();
