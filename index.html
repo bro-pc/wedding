@@ -125,8 +125,8 @@
       <p class="rsvp__lead">Ответ автоматически отправится организатору в Telegram.</p>
       <form class="rsvp__form" id="rsvpForm">
         <label class="rsvp__field" for="guestName">
-          <span>ФИО гостя</span>
-          <input id="guestName" name="name" type="text" placeholder="Например: Алиев Абдулло Саидович" autocomplete="name" required>
+          <span>ФИО</span>
+          <input id="guestName" name="name" type="text" placeholder="ФИО" autocomplete="name" required>
         </label>
         <div class="rsvp__choice" role="group" aria-label="Выбор ответа">
           <button class="choice active" type="button" data-answer="Я приду">Я приду</button>
@@ -134,7 +134,7 @@
         </div>
         <button class="send-btn" id="sendRsvpBtn" type="submit">Отправить ответ</button>
       </form>
-      <p class="rsvp__note" id="rsvpNote">Ваш ответ придёт организатору в Telegram.</p>
+      <p class="rsvp__note" id="rsvpNote" aria-live="polite"></p>
     </section>
 
     <section class="final section reveal">

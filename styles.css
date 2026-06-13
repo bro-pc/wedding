@@ -907,3 +907,7 @@ body.opened .music-btn {
     display: none;
   }
 }
+
+.rsvp__note:empty {
+  display: none;
+}
