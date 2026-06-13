@@ -1,6 +1,6 @@
 const settings = {
   weddingDate: '2026-06-26T18:00:00+03:00',
-  rsvpEndpoint: '',
+  rsvpEndpoint: 'https://script.google.com/macros/s/AKfycby3vfPlznBj_vhbQsEgNjaKylVStxirLNJ26ZqAcSaUlrn8Ku6-tAamYui0BXb3uJY/exec',
   couple: 'Muhammadjon and Mehrona',
   place: 'Ресторан «Стамбул», Москва, улица Скульптора Мухиной, 11'
 };
@@ -183,7 +183,7 @@ async function sendRsvp(event) {
   }
 
   if (!settings.rsvpEndpoint) {
-    rsvpNote.textContent = 'https://script.google.com/macros/s/AKfycby3vfPlznBj_vhbQsEgNjaKylVStxirLNJ26ZqAcSaUlrn8Ku6-tAamYui0BXb3uJY/exec';
+    rsvpNote.textContent = 'Нужно вставить ссылку Google Apps Script в rsvpEndpoint внутри script.js.';
     return;
   }
 
