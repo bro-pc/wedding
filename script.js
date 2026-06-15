@@ -200,7 +200,7 @@ async function sendRsvp(event) {
     });
 
     rsvpForm.reset();
-    rsvpNote.textContent = 'Спасибо! Ваш ответ отправлен.';
+    rsvpNote.textContent = 'Спасибо! Ваш ответ сохранён.';
   } catch {
     rsvpNote.textContent = 'Не получилось отправить ответ. Попробуйте ещё раз.';
   } finally {

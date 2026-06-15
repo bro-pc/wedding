@@ -1,55 +1,95 @@
+const SHEET_NAME = 'Ответы гостей';
+
 function doGet() {
   return ContentService
-    .createTextOutput('RSVP endpoint is working')
+    .createTextOutput('RSVP endpoint is working. Answers will be saved to Google Sheets.')
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
 function doPost(e) {
-  const props = PropertiesService.getScriptProperties();
-  const token = props.getProperty('TELEGRAM_BOT_TOKEN');
-  const chatId = props.getProperty('TELEGRAM_CHAT_ID');
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const spreadsheetId = props.getProperty('SPREADSHEET_ID');
 
-  if (!token || !chatId) {
-    return makeJson({ ok: false, error: 'Telegram token or chat id is missing' });
+    if (!spreadsheetId) {
+      return makeJson({ ok: false, error: 'SPREADSHEET_ID is missing' });
+    }
+
+    const data = e && e.parameter ? e.parameter : {};
+    const name = clean(data.name || '');
+    const answer = clean(data.answer || 'Ответ не выбран');
+    const couple = clean(data.couple || 'Muhammadjon and Mehrona');
+    const place = clean(data.place || 'Ресторан Стамбул, Москва');
+    const eventDate = clean(data.eventDate || '26.06.2026');
+    const eventTime = clean(data.eventTime || '18:00');
+    const page = clean(data.page || '');
+    const createdAt = Utilities.formatDate(new Date(), 'Europe/Moscow', 'dd.MM.yyyy HH:mm:ss');
+
+    if (!name) {
+      return makeJson({ ok: false, error: 'Guest name is empty' });
+    }
+
+    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+    const sheet = getOrCreateSheet(spreadsheet);
+    ensureHeader(sheet);
+
+    const row = [name, answer, createdAt, couple, eventDate, eventTime, place, page];
+    upsertGuest(sheet, row);
+    sortGuests(sheet);
+
+    return makeJson({ ok: true });
+  } catch (error) {
+    return makeJson({ ok: false, error: String(error) });
+  }
+}
+
+function getOrCreateSheet(spreadsheet) {
+  return spreadsheet.getSheetByName(SHEET_NAME) || spreadsheet.insertSheet(SHEET_NAME);
+}
+
+function ensureHeader(sheet) {
+  const headers = ['ФИО', 'Ответ', 'Дата ответа', 'Пара', 'Дата свадьбы', 'Время', 'Место', 'Страница'];
+  const current = sheet.getRange(1, 1, 1, headers.length).getValues()[0];
+  const hasHeader = current.some(function (value) {
+    return String(value).trim() !== '';
+  });
+
+  if (!hasHeader) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+    sheet.autoResizeColumns(1, headers.length);
+  }
+}
+
+function upsertGuest(sheet, row) {
+  const lastRow = sheet.getLastRow();
+  const guestName = normalizeName(row[0]);
+
+  if (lastRow > 1) {
+    const names = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (let i = 0; i < names.length; i += 1) {
+      if (normalizeName(names[i][0]) === guestName) {
+        sheet.getRange(i + 2, 1, 1, row.length).setValues([row]);
+        return;
+      }
+    }
   }
 
-  const data = e && e.parameter ? e.parameter : {};
-  const name = clean(data.name || 'Без ФИО');
-  const answer = clean(data.answer || 'Ответ не выбран');
-  const couple = clean(data.couple || 'Muhammadjon and Mehrona');
-  const place = clean(data.place || 'Ресторан Стамбул, Москва');
-  const eventDate = clean(data.eventDate || '26.06.2026');
-  const eventTime = clean(data.eventTime || '18:00');
-  const createdAt = clean(data.createdAt || new Date().toLocaleString('ru-RU'));
-  const page = clean(data.page || '');
+  sheet.appendRow(row);
+}
 
-  const text = [
-    '💌 <b>Новый ответ на свадебное приглашение</b>',
-    '',
-    '<b>Гость:</b> ' + escapeHtml(name),
-    '<b>Ответ:</b> ' + escapeHtml(answer),
-    '<b>Свадьба:</b> ' + escapeHtml(couple),
-    '<b>Дата:</b> ' + escapeHtml(eventDate) + ' в ' + escapeHtml(eventTime),
-    '<b>Место:</b> ' + escapeHtml(place),
-    '<b>Время ответа:</b> ' + escapeHtml(createdAt),
-    page ? '<b>Страница:</b> ' + escapeHtml(page) : ''
-  ].filter(Boolean).join('\n');
+function sortGuests(sheet) {
+  const lastRow = sheet.getLastRow();
+  const lastColumn = sheet.getLastColumn();
 
-  const response = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
-    method: 'post',
-    contentType: 'application/json',
-    muteHttpExceptions: true,
-    payload: JSON.stringify({
-      chat_id: chatId,
-      text: text,
-      parse_mode: 'HTML',
-      disable_web_page_preview: true
-    })
-  });
+  if (lastRow <= 2) return;
 
-  return makeJson({
-    ok: response.getResponseCode() >= 200 && response.getResponseCode() < 300
-  });
+  sheet
+    .getRange(2, 1, lastRow - 1, lastColumn)
+    .sort({ column: 1, ascending: true });
+
+  sheet.autoResizeColumns(1, lastColumn);
 }
 
 function makeJson(value) {
@@ -59,18 +99,9 @@ function makeJson(value) {
 }
 
 function clean(value) {
-  return String(value).trim().slice(0, 500);
+  return String(value).replace(/\s+/g, ' ').trim().slice(0, 500);
 }
 
-function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, function (char) {
-    const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    };
-    return map[char];
-  });
+function normalizeName(value) {
+  return clean(value).toLowerCase();
 }

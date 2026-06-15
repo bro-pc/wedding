@@ -11,7 +11,8 @@
 - таймер до свадьбы;
 - карта ресторана;
 - форма подтверждения присутствия;
-- отправка ФИО и ответа гостя в Telegram организатору;
+- сохранение ФИО и ответа гостя в Google Таблицу;
+- автоматическая сортировка гостей по ФИО в алфавитном порядке;
 - адаптация под телефон;
 - файл календаря `wedding.ics`.
 
@@ -23,8 +24,6 @@
 photo.jpg
 ```
 
-Он автоматически станет фоном главного экрана. Если фото не добавить, будет красивый градиентный фон.
-
 ## Как добавить свою музыку
 
 Положи рядом с `index.html` файл:
@@ -33,91 +32,72 @@ photo.jpg
 music.mp3
 ```
 
-Если файла нет, открытка использует лёгкую встроенную мелодию через браузер.
+## Как подключить ответы в Google Таблицу
 
-## Как подключить отправку ответов в Telegram
+Лучше использовать именно Google Таблицу, а не обычный Google Документ: там гостевые ответы будут аккуратно лежать строками и автоматически сортироваться по ФИО.
 
-GitHub Pages хранит только статические файлы, поэтому токен Telegram-бота нельзя вставлять прямо в `script.js`. Для отправки ответов используется отдельный маленький backend на Google Apps Script.
+### 1. Создай Google Таблицу
 
-### 1. Создай Telegram-бота
+1. Открой Google Drive.
+2. Создай новую Google Таблицу.
+3. Назови её, например: `Ответы гостей - Muhammadjon and Mehrona`.
+4. Скопируй ID таблицы из ссылки.
 
-1. Открой Telegram.
-2. Найди `@BotFather`.
-3. Отправь команду `/newbot`.
-4. Создай бота и скопируй токен.
-5. Открой своего бота и нажми `Start`, чтобы бот мог отправлять тебе сообщения.
-
-### 2. Узнай свой Telegram chat_id
-
-После того как ты нажал `Start` в своём боте, открой в браузере ссылку:
+Пример:
 
 ```text
-https://api.telegram.org/botТВОЙ_ТОКЕН/getUpdates
+https://docs.google.com/spreadsheets/d/1AbCdEfGhIjKlMnOpQrStUvWxYz/edit
 ```
 
-В ответе найди:
-
-```json
-"chat":{"id":123456789
-```
-
-Число `123456789` - это твой `TELEGRAM_CHAT_ID`.
-
-### 3. Создай backend в Google Apps Script
-
-1. Открой `https://script.google.com/`.
-2. Создай новый проект.
-3. Удали весь код из файла `Code.gs`.
-4. Скопируй туда код из файла `google-apps-script-rsvp.js`.
-5. Открой `Project Settings`.
-6. В блоке `Script Properties` добавь две переменные:
+ID таблицы:
 
 ```text
-TELEGRAM_BOT_TOKEN = токен от BotFather
-TELEGRAM_CHAT_ID = твой chat_id
+1AbCdEfGhIjKlMnOpQrStUvWxYz
 ```
 
-### 4. Опубликуй Google Apps Script как Web App
+### 2. Замени код в Google Apps Script
 
-1. Нажми `Deploy` -> `New deployment`.
-2. Тип выбери `Web app`.
-3. Execute as: `Me`.
-4. Who has access: `Anyone`.
-5. Нажми `Deploy`.
-6. Скопируй ссылку Web app. Она будет похожа на:
+1. Открой свой проект Google Apps Script.
+2. Удали старый код Telegram из `Code.gs`.
+3. Вставь код из файла `google-apps-script-rsvp.js`.
+4. Нажми `Сохранить`.
+
+### 3. Добавь ID таблицы в свойства скрипта
+
+Слева нажми шестерёнку `Project Settings` / `Настройки проекта`.
+В `Script Properties` / `Свойства скрипта` добавь:
 
 ```text
-https://script.google.com/macros/s/XXXXXXXXXXXX/exec
+SPREADSHEET_ID = ID_ТВОЕЙ_ТАБЛИЦЫ
 ```
 
-### 5. Вставь ссылку в сайт
+Telegram-токен и `TELEGRAM_CHAT_ID` больше не нужны.
 
-Открой `script.js` и найди в начале:
+### 4. Обнови развертывание
 
-```js
-rsvpEndpoint: '',
-```
-
-Вставь ссылку Google Apps Script:
-
-```js
-rsvpEndpoint: 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec',
-```
-
-После этого каждый гость сможет написать ФИО, выбрать `Я приду` или `Не смогу`, нажать `Отправить ответ`, и тебе придёт сообщение в Telegram.
-
-## Как выложить на GitHub Pages
-
-1. Создай новый репозиторий на GitHub, например `wedding`.
-2. Загрузи туда все файлы из этой папки.
-3. Открой `Settings` -> `Pages`.
-4. В `Build and deployment` выбери:
-   - Source: `Deploy from a branch`
-   - Branch: `main`
-   - Folder: `/root`
-5. Нажми `Save`.
-6. Ссылка будет примерно такая:
+Если ссылка `/exec` у тебя уже есть, можно оставить её той же, но нужно обновить версию:
 
 ```text
-https://твой-логин.github.io/wedding/
+Deploy / Начать развертывание -> Manage deployments / Управление развертываниями -> карандашик -> Version: New version -> Deploy
 ```
+
+Права доступа оставь так:
+
+```text
+Execute as: Me
+Who has access: Anyone
+```
+
+При первом запуске Google попросит доступ к таблицам - разреши.
+
+### 5. Обнови сайт на GitHub
+
+В папке проекта выполни:
+
+```powershell
+git add .
+git commit -m "Save RSVP answers to Google Sheets"
+git push
+```
+
+После этого ответы гостей будут появляться в Google Таблице. Строки будут сортироваться по первому столбцу `ФИО`, поэтому лучше, чтобы гости писали именно в формате: `Фамилия Имя Отчество`.
